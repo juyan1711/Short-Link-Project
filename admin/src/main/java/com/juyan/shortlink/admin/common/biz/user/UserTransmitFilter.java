@@ -18,6 +18,7 @@
 package com.juyan.shortlink.admin.common.biz.user;
 
 import cn.hutool.core.util.StrUtil;
+import com.google.common.collect.Lists;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;
@@ -25,6 +26,9 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.data.redis.core.StringRedisTemplate;
+
+import java.util.List;
 
 /**
  * 用户信息传输过滤器
