@@ -18,6 +18,7 @@ import com.juyan.shortlink.admin.dto.req.UserRegisterReqDTO;
 import com.juyan.shortlink.admin.dto.req.UserUpdateReqDTO;
 import com.juyan.shortlink.admin.dto.resp.UserLoginRespDTO;
 import com.juyan.shortlink.admin.dto.resp.UserRespDTO;
+import com.juyan.shortlink.admin.service.GroupService;
 import com.juyan.shortlink.admin.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.User;
@@ -53,6 +54,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO>implements U
      */
     private final StringRedisTemplate stringRedisTemplate;
 
+    /**
+     * Group服务
+     */
+    private final GroupService groupService;
+
     public UserRespDTO getUserByUsername(String username) {
         LambdaQueryWrapper<UserDO> queryWrapper = Wrappers.lambdaQuery(UserDO.class)
                 .eq(UserDO::getUsername, username);
@@ -77,16 +83,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO>implements U
         }
         //通过分布式锁完善用户注册功能，防止恶意请求：毫秒级触发大量请求去一个未注册的用户名
         RLock lock = redissonClient.getLock(RedisCacheConstant.LOCK_USER_REGISTER_KEY+requestParam.getUsername());
-        try{
-            if(lock.tryLock()){
-                int insert = baseMapper.insert(BeanUtil.toBean(requestParam,UserDO.class));
-                if(insert<1){
-                    throw new ClientException(UserErrorCodeEnum.USER_SAVE_ERROR);
-                }
-                userRegisterCachePenetrationBloomFilter.add(requestParam.getUsername());
-                return;
-            }
+        if(!lock.tryLock()){
             throw new ClientException(UserErrorCodeEnum.USER_NAME_EXIST);
+        }
+        try{
+            int insert = baseMapper.insert(BeanUtil.toBean(requestParam,UserDO.class));
+            if(insert<1){
+                throw new ClientException(UserErrorCodeEnum.USER_SAVE_ERROR);
+            }
+            userRegisterCachePenetrationBloomFilter.add(requestParam.getUsername());
+            groupService.saveGroup(requestParam.getUsername(),"默认分组");
+        }catch (DuplicateKeyException ex){
+            throw new ClientException(UserErrorCodeEnum.USER_EXIST);
         }finally {
             lock.unlock();
         }
