@@ -17,17 +17,17 @@
 
 package com.juyan.shortlink.admin.remote;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.juyan.shortlink.admin.common.convention.result.Result;
-import com.juyan.shortlink.admin.remote.dto.req.RecycleBinSaveReqDTO;
-import com.juyan.shortlink.admin.remote.dto.req.ShortLinkUpdateReqDTO;
+import com.juyan.shortlink.admin.remote.dto.req.*;
 import com.juyan.shortlink.admin.remote.dto.resp.ShortLinkGroupCountQueryRespDTO;
-import com.juyan.shortlink.admin.remote.dto.req.ShortLinkCreateReqDTO;
-import com.juyan.shortlink.admin.remote.dto.req.ShortLinkPageReqDTO;
 import com.juyan.shortlink.admin.remote.dto.resp.ShortLinkCreateRespDTO;
 import com.juyan.shortlink.admin.remote.dto.resp.ShortLinkPageRespDTO;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -112,6 +112,21 @@ public interface ShortLinkActualRemoteService {
 
     default void saveRecycleBin(RecycleBinSaveReqDTO requestParam){
         String postResult = HttpUtil.post("http://127.0.0.1:8001/api/short-link/v1/recycle-bin/save", JSON.toJSONString(requestParam));
+    }
+
+    /**
+     * 分页查询回收站短链接
+     * @param requestParam
+     * @return
+     */
+    default Result<IPage<ShortLinkPageRespDTO>> pageRecycleBinShortLink(ShortLinkRecycleBinPageReqDTO requestParam) {
+        Map<String,Object> requestMap = new HashMap();
+        requestMap.put("gidList",requestParam.getGidList());
+        requestMap.put("current",requestParam.getCurrent());
+        requestMap.put("size",requestParam.getSize());
+        String resultPageStr = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/recycle-bin/page", requestMap);
+        return JSON.parseObject(resultPageStr, new TypeReference<>() {
+        });
     }
 
 }

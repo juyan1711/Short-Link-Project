@@ -249,8 +249,8 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                     .eq(ShortLinkDO::getDelFlag, 0)
                     .eq(ShortLinkDO::getEnableStatus, 0);
             ShortLinkDO shortLinkDO = baseMapper.selectOne(queryWrapper);
-            //数据过期或者不存在数据库中（已经被删除 DelFlag = 1）
-            if(shortLinkDO==null||shortLinkDO.getValidDate().before(new Date())) {
+            //数据过期或者不存在数据库中（已经失效 EnableStatus = 1）
+            if(shortLinkDO==null||(shortLinkDO.getValidDate()!=null&&shortLinkDO.getValidDate().before(new Date()))) {
                 //存入到缓存，value设置为null
                 stringRedisTemplate.opsForValue().set(String.format(RedisKeyConstant.GOTO_IS_NULL_SHORT_LINK_KEY, fullShortUrl), "-", 30, TimeUnit.MINUTES);
                 ((HttpServletResponse) response).sendRedirect("/page/notfound");
