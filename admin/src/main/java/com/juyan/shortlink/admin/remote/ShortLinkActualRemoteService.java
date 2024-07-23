@@ -129,4 +129,15 @@ public interface ShortLinkActualRemoteService {
         });
     }
 
+    /**
+     * 恢复短链接
+     * @param requestParam
+     */
+    default void recoverRecycleBin(RecycleBinRecoverReqDTO requestParam){
+        String postResult = HttpUtil.post("http://127.0.0.1:8001/api/short-link/v1/recycle-bin/recover", JSON.toJSONString(requestParam));
+    }
+
+    default void removeRecycleBin(RecycleBinRemoveReqDTO requestParam){
+        String postResult = HttpUtil.post("http://127.0.0.1:8001/api/short-link/v1/recycle-bin/remove", JSON.toJSONString(requestParam));
+    }
 }

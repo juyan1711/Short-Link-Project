@@ -9,9 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.juyan.shortlink.project.common.constant.RedisKeyConstant;
 import com.juyan.shortlink.project.dao.entity.ShortLinkDO;
 import com.juyan.shortlink.project.dao.mapper.ShortLinkMapper;
-import com.juyan.shortlink.project.dto.req.RecycleBinSaveReqDTO;
-import com.juyan.shortlink.project.dto.req.ShortLinkPageReqDTO;
-import com.juyan.shortlink.project.dto.req.ShortLinkRecycleBinPageReqDTO;
+import com.juyan.shortlink.project.dto.req.*;
 import com.juyan.shortlink.project.dto.resp.ShortLinkPageRespDTO;
 import com.juyan.shortlink.project.service.RecycleBinService;
 import com.juyan.shortlink.project.toolkit.LinkUtil;
@@ -55,5 +53,30 @@ public class RecycleBinServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLin
             result.setDomain("http://"+result.getDomain());
             return result;
         });
+    }
+
+    @Override
+    public void recoverRecycleBin(RecycleBinRecoverReqDTO requestParam) {
+        LambdaUpdateWrapper<ShortLinkDO> updateWrapper = Wrappers.lambdaUpdate(ShortLinkDO.class)
+                .eq(ShortLinkDO::getGid, requestParam.getGid())
+                .eq(ShortLinkDO::getFullShortUrl, requestParam.getFullShortUrl())
+                .eq(ShortLinkDO::getEnableStatus, 1)
+                .eq(ShortLinkDO::getDelFlag, 0);
+        ShortLinkDO shortLinkDO = ShortLinkDO.builder()
+                .enableStatus(0)
+                .build();
+        baseMapper.update(shortLinkDO, updateWrapper);
+        stringRedisTemplate.delete(String.format(RedisKeyConstant.GOTO_IS_NULL_SHORT_LINK_KEY, requestParam.getFullShortUrl()));
+    }
+
+    @Override
+    public void removeRecycleBin(RecycleBinRemoveReqDTO requestParam) {
+        LambdaUpdateWrapper<ShortLinkDO> updateWrapper = Wrappers.lambdaUpdate(ShortLinkDO.class)
+                .eq(ShortLinkDO::getFullShortUrl, requestParam.getFullShortUrl())
+                .eq(ShortLinkDO::getGid, requestParam.getGid())
+                .eq(ShortLinkDO::getEnableStatus, 1)
+                .eq(ShortLinkDO::getDelFlag, 0);
+
+        baseMapper.delete(updateWrapper);
     }
 }

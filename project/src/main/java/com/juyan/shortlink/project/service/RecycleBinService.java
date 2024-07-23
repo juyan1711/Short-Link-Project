@@ -3,9 +3,7 @@ package com.juyan.shortlink.project.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.juyan.shortlink.project.dao.entity.ShortLinkDO;
-import com.juyan.shortlink.project.dto.req.RecycleBinSaveReqDTO;
-import com.juyan.shortlink.project.dto.req.ShortLinkPageReqDTO;
-import com.juyan.shortlink.project.dto.req.ShortLinkRecycleBinPageReqDTO;
+import com.juyan.shortlink.project.dto.req.*;
 import com.juyan.shortlink.project.dto.resp.ShortLinkPageRespDTO;
 import org.springframework.stereotype.Service;
 
@@ -25,4 +23,18 @@ public interface RecycleBinService extends IService<ShortLinkDO> {
      * @return
      */
     IPage<ShortLinkPageRespDTO> pageShortLink(ShortLinkRecycleBinPageReqDTO requestParam);
+
+    /**
+     * 从回收站恢复短链接
+     *
+     * @param requestParam 恢复短链接请求参数
+     */
+    void recoverRecycleBin(RecycleBinRecoverReqDTO requestParam);
+
+    /**
+     * 从回收站移除短链接
+     *
+     * @param requestParam 移除短链接请求参数
+     */
+    void removeRecycleBin(RecycleBinRemoveReqDTO requestParam);
 }

@@ -16,3 +16,12 @@ spring:
     view:
       prefix: /templates/
       suffix: .html
+
+# 逻辑删除数据（回收站彻底删除数据时，调用delete接口时，自动进行逻辑删除-delFlag置为1）
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-field: delFlag
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      id-type: auto

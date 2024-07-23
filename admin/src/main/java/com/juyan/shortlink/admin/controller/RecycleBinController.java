@@ -22,9 +22,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.juyan.shortlink.admin.common.convention.result.Result;
 import com.juyan.shortlink.admin.common.convention.result.Results;
 import com.juyan.shortlink.admin.remote.ShortLinkActualRemoteService;
-import com.juyan.shortlink.admin.remote.dto.req.RecycleBinSaveReqDTO;
-import com.juyan.shortlink.admin.remote.dto.req.ShortLinkPageReqDTO;
-import com.juyan.shortlink.admin.remote.dto.req.ShortLinkRecycleBinPageReqDTO;
+import com.juyan.shortlink.admin.remote.dto.req.*;
 import com.juyan.shortlink.admin.remote.dto.resp.ShortLinkPageRespDTO;
 import com.juyan.shortlink.admin.service.RecycleBinService;
 import lombok.RequiredArgsConstructor;
@@ -67,9 +65,19 @@ public class RecycleBinController {
      * 恢复短链接
      */
 
+    @PostMapping("/api/short-link/admin/v1/recycle-bin/recover")
+    public Result<Void> recoverRecycleBin(@RequestBody RecycleBinRecoverReqDTO requestParam) {
+        shortLinkActualRemoteService.recoverRecycleBin(requestParam);
+        return Results.success();
+    }
 
     /**
      * 移除短链接
      */
+    @PostMapping("/api/short-link/admin/v1/recycle-bin/remove")
+    public Result<Void> removeRecycleBin(@RequestBody RecycleBinRemoveReqDTO requestParam) {
+        shortLinkActualRemoteService.removeRecycleBin(requestParam);
+        return Results.success();
+    }
 
 }

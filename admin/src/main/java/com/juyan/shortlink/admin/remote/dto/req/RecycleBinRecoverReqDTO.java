@@ -15,29 +15,23 @@
  * limitations under the License.
  */
 
-package com.juyan.shortlink.admin.service;
+package com.juyan.shortlink.admin.remote.dto.req;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.juyan.shortlink.admin.common.convention.result.Result;
-import com.juyan.shortlink.admin.remote.dto.req.RecycleBinRemoveReqDTO;
-import com.juyan.shortlink.admin.remote.dto.req.ShortLinkPageReqDTO;
-import com.juyan.shortlink.admin.remote.dto.req.ShortLinkRecycleBinPageReqDTO;
-import com.juyan.shortlink.admin.remote.dto.resp.ShortLinkPageRespDTO;
-
+import lombok.Data;
 
 /**
- * URL 回收站接口层
+ * 回收站恢复功能
  */
-public interface RecycleBinService {
+@Data
+public class RecycleBinRecoverReqDTO {
 
     /**
-     * 分页查询回收站短链接
-     *
-     * @param requestParam 请求参数
-     * @return 返回参数包装
+     * 分组标识
      */
-    Result<IPage<ShortLinkPageRespDTO>> pageRecycleBinShortLink(ShortLinkRecycleBinPageReqDTO requestParam);
+    private String gid;
 
-
+    /**
+     * 全部短链接
+     */
+    private String fullShortUrl;
 }
