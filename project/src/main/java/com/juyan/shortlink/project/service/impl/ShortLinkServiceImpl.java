@@ -249,22 +249,21 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                     .eq(ShortLinkDO::getDelFlag, 0)
                     .eq(ShortLinkDO::getEnableStatus, 0);
             ShortLinkDO shortLinkDO = baseMapper.selectOne(queryWrapper);
-            if(shortLinkDO!=null){
-                //数据库虽然存在查询的数据，但是数据过期了
+            //数据过期或者不存在数据库中（已经被删除 DelFlag = 1）
+            if(shortLinkDO==null||shortLinkDO.getValidDate().before(new Date())) {
                 //存入到缓存，value设置为null
-                if(shortLinkDO.getValidDate()!=null&&shortLinkDO.getValidDate().before(new Date())){
-                    stringRedisTemplate.opsForValue().set(String.format(RedisKeyConstant.GOTO_IS_NULL_SHORT_LINK_KEY,fullShortUrl),"-",30, TimeUnit.MINUTES);
-                    ((HttpServletResponse)response).sendRedirect("/page/notfound");
-                    return;
-                }
-                //数据库存在查询的数据并且没有过期，存入到缓存
-                stringRedisTemplate.opsForValue().set(String.format(RedisKeyConstant.GOTO_SHORT_LINK_KEY,fullShortUrl),
-                        shortLinkDO.getOriginUrl(),
-                        LinkUtil.getLinkCacheValidTime(shortLinkDO.getValidDate()),
-                        TimeUnit.MILLISECONDS);
-                //转发到原始链接
-                ((HttpServletResponse)response).sendRedirect(shortLinkDO.getOriginUrl());
+                stringRedisTemplate.opsForValue().set(String.format(RedisKeyConstant.GOTO_IS_NULL_SHORT_LINK_KEY, fullShortUrl), "-", 30, TimeUnit.MINUTES);
+                ((HttpServletResponse) response).sendRedirect("/page/notfound");
+                return;
             }
+            //数据库存在查询的数据并且没有过期，存入到缓存
+            stringRedisTemplate.opsForValue().set(String.format(RedisKeyConstant.GOTO_SHORT_LINK_KEY,fullShortUrl),
+                    shortLinkDO.getOriginUrl(),
+                    LinkUtil.getLinkCacheValidTime(shortLinkDO.getValidDate()),
+                    TimeUnit.MILLISECONDS);
+            //转发到原始链接
+            ((HttpServletResponse)response).sendRedirect(shortLinkDO.getOriginUrl());
+
         }finally {
             lock.unlock();
         }

@@ -23,12 +23,14 @@ import com.alibaba.fastjson2.TypeReference;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
 import com.juyan.shortlink.admin.common.convention.result.Result;
+import com.juyan.shortlink.admin.remote.dto.req.RecycleBinSaveReqDTO;
 import com.juyan.shortlink.admin.remote.dto.req.ShortLinkUpdateReqDTO;
 import com.juyan.shortlink.admin.remote.dto.resp.ShortLinkGroupCountQueryRespDTO;
 import com.juyan.shortlink.admin.remote.dto.req.ShortLinkCreateReqDTO;
 import com.juyan.shortlink.admin.remote.dto.req.ShortLinkPageReqDTO;
 import com.juyan.shortlink.admin.remote.dto.resp.ShortLinkCreateRespDTO;
 import com.juyan.shortlink.admin.remote.dto.resp.ShortLinkPageRespDTO;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.HashMap;
 import java.util.List;
@@ -101,4 +103,15 @@ public interface ShortLinkActualRemoteService {
         return JSON.parseObject(resultResp, new TypeReference<>() {
         });
     }
+
+    /**
+     * 保存回收站
+     * @param requestParam
+     * @return
+     */
+
+    default void saveRecycleBin(RecycleBinSaveReqDTO requestParam){
+        String postResult = HttpUtil.post("http://127.0.0.1:8001/api/short-link/v1/recycle-bin/save", JSON.toJSONString(requestParam));
+    }
+
 }
