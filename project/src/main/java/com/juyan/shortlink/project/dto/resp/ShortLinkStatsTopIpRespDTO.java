@@ -15,70 +15,29 @@
  * limitations under the License.
  */
 
-package com.juyan.shortlink.project.dao.entity;
+package com.juyan.shortlink.project.dto.resp;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.juyan.shortlink.project.common.database.BaseDO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 访问日志监控实体
+ * 短链接高频访问IP监控响应参数
  */
 @Data
-@TableName("t_link_access_logs")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LinkAccessLogsDO extends BaseDO {
+public class ShortLinkStatsTopIpRespDTO {
 
     /**
-     * id
+     * 统计
      */
-    private Long id;
+    private Integer cnt;
 
     /**
-     * 完整短链接
-     */
-    private String fullShortUrl;
-
-    private String gid;
-
-    /**
-     * 用户信息
-     */
-    private String user;
-
-    /**
-     * 浏览器
-     */
-    private String browser;
-
-    /**
-     * 操作系统
-     */
-    private String os;
-
-    /**
-     * ip
+     * IP
      */
     private String ip;
-
-    /**
-     * 访问网络
-     */
-    private String network;
-
-    /**
-     * 访问设备
-     */
-    private String device;
-
-    /**
-     * 地区
-     */
-    private String locale;
-
 }

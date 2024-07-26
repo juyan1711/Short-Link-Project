@@ -58,4 +58,6 @@ public class ShortLinkController {
     public Result<List<ShortLinkGroupCountQueryRespDTO>> listGroupShortLinkCount(@RequestParam("requestParam") List<String> requestParam) {
         return shortLinkActualRemoteService.listGroupShortLinkCount(requestParam);
     }
+
+
 }

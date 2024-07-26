@@ -15,70 +15,38 @@
  * limitations under the License.
  */
 
-package com.juyan.shortlink.project.dao.entity;
+package com.juyan.shortlink.admin.remote.dto.req;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.juyan.shortlink.project.common.database.BaseDO;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
- * 访问日志监控实体
+ * 短链接监控请求参数
  */
 @Data
-@TableName("t_link_access_logs")
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class LinkAccessLogsDO extends BaseDO {
-
-    /**
-     * id
-     */
-    private Long id;
+public class ShortLinkStatsReqDTO {
 
     /**
      * 完整短链接
      */
     private String fullShortUrl;
 
+    /**
+     * 分组标识
+     */
     private String gid;
 
     /**
-     * 用户信息
+     * 开始日期
      */
-    private String user;
+    private String startDate;
 
     /**
-     * 浏览器
+     * 结束日期
      */
-    private String browser;
+    private String endDate;
 
-    /**
-     * 操作系统
-     */
-    private String os;
-
-    /**
-     * ip
-     */
-    private String ip;
-
-    /**
-     * 访问网络
-     */
-    private String network;
-
-    /**
-     * 访问设备
-     */
-    private String device;
-
-    /**
-     * 地区
-     */
-    private String locale;
-
+//    /**
+//     * 启用标识 0：启用 1：未启用
+//     */
+//    private Integer enableStatus;
 }

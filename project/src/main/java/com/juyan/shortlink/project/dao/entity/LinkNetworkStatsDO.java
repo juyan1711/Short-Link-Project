@@ -18,21 +18,25 @@
 package com.juyan.shortlink.project.dao.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import com.juyan.shortlink.project.common.database.BaseDO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 /**
- * 访问日志监控实体
+ * 访问网络统计访问实体
+ * 公众号：马丁玩编程，回复：加群，添加马哥微信（备注：link）获取项目资料
  */
 @Data
-@TableName("t_link_access_logs")
+@TableName("t_link_network_stats")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LinkAccessLogsDO extends BaseDO {
+public class LinkNetworkStatsDO extends BaseDO {
 
     /**
      * id
@@ -47,38 +51,17 @@ public class LinkAccessLogsDO extends BaseDO {
     private String gid;
 
     /**
-     * 用户信息
+     * 日期
      */
-    private String user;
+    private Date date;
 
     /**
-     * 浏览器
+     * 访问量
      */
-    private String browser;
-
-    /**
-     * 操作系统
-     */
-    private String os;
-
-    /**
-     * ip
-     */
-    private String ip;
+    private Integer cnt;
 
     /**
      * 访问网络
      */
     private String network;
-
-    /**
-     * 访问设备
-     */
-    private String device;
-
-    /**
-     * 地区
-     */
-    private String locale;
-
 }
