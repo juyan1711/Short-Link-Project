@@ -33,6 +33,9 @@ rules:
           standard:
             shardingColumn: gid
             shardingAlgorithmName: link_stats_today_table_hash_mod
+    # 绑定表，防止联表查询时出现笛卡尔积现象
+    bindingTables:
+      - t_link, t_link_stats_today
     # 分片算法
     shardingAlgorithms:
       # 数据表分片算法
