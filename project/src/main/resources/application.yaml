@@ -17,6 +17,8 @@ spring:
       prefix: /templates/
       suffix: .html
 short-link:
+  domain:
+    default: nurl.ink:8001
   stats:
     locale:
       amap-key: fba8714da37468ec8971f4e329ff2e4a

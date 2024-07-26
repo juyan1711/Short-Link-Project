@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.Week;
 import cn.hutool.core.lang.UUID;
+import cn.hutool.core.text.StrBuilder;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
@@ -123,17 +124,30 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
      * 今日访问监控表
      */
     private final LinkStatsTodayMapper linkStatsTodayMapper;
+
+    /**
+     * 高德地图访问key (用来监控地区信息)
+     */
     @Value("${short-link.stats.locale.amap-key}")
     private String statsLocaleAmapKey;
+
+    /**
+     * 域名
+     */
+    @Value("${short-link.domain.default}")
+    private String createShortLinkDefaultDomain;
 
 
     @Override
     public ShortLinkCreateRespDTO createShortLink(ShortLinkCreateReqDTO requestParam) {
         String shortLinkSuffix = generateSuffix(requestParam);
-        String fullShortUrl = requestParam.getDomain()+"/"+shortLinkSuffix;
+        String fullShortUrl = StrBuilder.create(createShortLinkDefaultDomain)
+                .append("/")
+                .append(shortLinkSuffix)
+                .toString();
 
         ShortLinkDO shortLinkDO = ShortLinkDO.builder()
-                .domain(requestParam.getDomain())
+                .domain(createShortLinkDefaultDomain)
                 .shortUri(shortLinkSuffix)
                 .fullShortUrl(fullShortUrl)
                 .originUrl(requestParam.getOriginUrl())
@@ -245,7 +259,12 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     @Override
     public void restoreUrl(String shortUri, ServletRequest request, ServletResponse response) {
         String serverName = request.getServerName();
-        String fullShortUrl = serverName + "/" + shortUri;
+        String serverPort = Optional.ofNullable(request.getServerPort())
+                .filter(each -> !Objects.equals(each,80))
+                .map(String::valueOf)
+                .map(each -> ":"+each)
+                .orElse("");
+        String fullShortUrl = serverName + serverPort +"/" + shortUri;
 
         //解决缓存穿透
         //1. 判断缓存中是否存在
