@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.juyan.shortlink.project.dao.entity.LinkAccessStatsDO;
 import com.juyan.shortlink.project.dao.mapper.LinkAccessStatsMapper;
+import com.juyan.shortlink.project.dto.req.ShortLinkGroupStatsAccessRecordReqDTO;
 import com.juyan.shortlink.project.dto.req.ShortLinkGroupStatsReqDTO;
 import com.juyan.shortlink.project.dto.req.ShortLinkStatsAccessRecordReqDTO;
 import com.juyan.shortlink.project.dto.req.ShortLinkStatsReqDTO;
@@ -36,4 +37,11 @@ public interface ShortLinkStatsService  {
      * @return 分组短链接监控数据
      */
     ShortLinkStatsRespDTO groupShortLinkStats(ShortLinkGroupStatsReqDTO requestParam);
+
+    /**
+     * 访问分组短链接指定时间内访问记录监控数据
+     * @param requestParam 获取分组短链接访问数据入参
+     * @return 分组短链接访问记录
+     */
+    IPage<ShortLinkStatsAccessRecordRespDTO> groupShortLinkStatsAccessRecord(ShortLinkGroupStatsAccessRecordReqDTO requestParam);
 }
