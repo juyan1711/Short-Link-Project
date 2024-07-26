@@ -17,7 +17,6 @@
 
 package com.juyan.shortlink.project.dao.entity;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.juyan.shortlink.project.common.database.BaseDO;
 import lombok.AllArgsConstructor;
@@ -25,18 +24,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 import java.util.Date;
 
 /**
- * 短链接实体
+ * 短链接今日统计实体
  */
-@Builder
-@TableName("t_link")
+@TableName("t_link_stats_today")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ShortLinkDO extends BaseDO {
+public class LinkStatsTodayDO extends BaseDO {
 
     /**
      * id
@@ -44,81 +42,27 @@ public class ShortLinkDO extends BaseDO {
     private Long id;
 
     /**
-     * 域名
-     */
-    private String domain;
-
-    /**
      * 短链接
-     */
-    private String shortUri;
-
-    /**
-     * 完整短链接
      */
     private String fullShortUrl;
 
     /**
-     * 原始链接
+     * 日期
      */
-    private String originUrl;
+    private Date date;
 
     /**
-     * 点击量
+     * 今日pv
      */
-    private Integer clickNum;
-
+    private Integer todayPv;
 
     /**
-     * 分组标识
+     * 今日uv
      */
-    private String gid;
+    private Integer todayUv;
 
     /**
-     * 网站标识
+     * 今日ip数
      */
-    private String favicon;
-
-    /**
-     * 启用标识 0：未启用 1：已启用
-     */
-    private Integer enableStatus;
-
-    /**
-     * 创建类型 0：控制台 1：接口
-     */
-    private Integer createdType;
-
-    /**
-     * 有效期类型 0：永久有效 1：用户自定义
-     */
-    private Integer validDateType;
-
-    /**
-     * 有效期
-     */
-    private Date validDate;
-
-    /**
-     * 描述
-     */
-    //describe涉及到mysql中的关键字，所以需要用` `来包一下
-    @TableField("`describe`")
-    private String describe;
-
-    /**
-     * 历史PV
-     */
-    private Integer totalPv;
-
-    /**
-     * 历史UV
-     */
-    private Integer totalUv;
-
-    /**
-     * 历史UIP
-     */
-    private Integer totalUip;
-
+    private Integer todayUip;
 }

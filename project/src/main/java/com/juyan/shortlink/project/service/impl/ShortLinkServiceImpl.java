@@ -135,6 +135,9 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 .originUrl(requestParam.getOriginUrl())
                 .gid(requestParam.getGid())
                 .enableStatus(0)
+                .totalPv(0)
+                .totalUv(0)
+                .totalUip(0)
                 .createdType(requestParam.getCreatedType())
                 .validDateType(requestParam.getValidDateType())
                 .validDate(requestParam.getValidDate())
@@ -363,7 +366,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             }
             //统计ip访问次数
             String actualIp = LinkUtil.getActualIp((HttpServletRequest) request);
-            Long uipAdd = stringRedisTemplate.opsForSet().add("short-link:stats:uv:" + fullShortUrl, actualIp);
+            Long uipAdd = stringRedisTemplate.opsForSet().add("short-link:stats:uip:" + fullShortUrl, actualIp);
             AtomicBoolean uipFirstFlag = new AtomicBoolean();
             uipFirstFlag.set(uipAdd!=null && uipAdd>0L);
 
@@ -467,6 +470,9 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                         .locale(StrUtil.join("-","中国",actualProvince,actualCity))
                         .build();
                 linkAccessLogsMapper.insert(linkAccessLogsDO);
+
+                //短链接访问统计自增
+                baseMapper.incrementStats(gid,fullShortUrl,1,uvFirstFlag.get()?1:0,uipFirstFlag.get()?1:0);
 
 
             }
