@@ -42,7 +42,7 @@ public class LinkUtil {
      */
     public static long getLinkCacheValidTime(Date validDate) {
         return Optional.ofNullable(validDate)
-                .map(each -> DateUtil.between(new Date(), each, DateUnit.MS))
+                .map(each -> DateUtil.between(new Date(),each,DateUnit.MS,false))
                 .orElse(ShortLinkConstant.DEFAULT_CACHE_VALID_TIME);
     }
 

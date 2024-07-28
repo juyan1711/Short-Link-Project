@@ -15,18 +15,26 @@
  * limitations under the License.
  */
 
-package com.juyan.shortlink.project.dto.req;
+package com.juyan.shortlink.admin.remote.dto.resp;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-
-import java.util.Date;
+import lombok.NoArgsConstructor;
 
 /**
- * 短链接修改请求对象
+ * 短链接基础信息响应参数
  */
 @Data
-public class ShortLinkUpdateReqDTO {
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class ShortLinkBaseInfoRespDTO {
+
+    /**
+     * 描述信息
+     */
+    private String describe;
 
     /**
      * 原始链接
@@ -34,34 +42,7 @@ public class ShortLinkUpdateReqDTO {
     private String originUrl;
 
     /**
-     * 完整短链接
+     * 短链接
      */
     private String fullShortUrl;
-
-
-    /**
-     * 原始分组标识
-     */
-    private String originGid;
-
-    /**
-     * 分组标识
-     */
-    private String gid;
-
-    /**
-     * 有效期类型 0：永久有效 1：自定义
-     */
-    private Integer validDateType;
-
-    /**
-     * 有效期
-     */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date validDate;
-
-    /**
-     * 描述
-     */
-    private String describe;
 }
