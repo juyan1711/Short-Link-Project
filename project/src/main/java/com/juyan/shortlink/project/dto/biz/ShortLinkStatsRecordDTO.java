@@ -15,54 +15,76 @@
  * limitations under the License.
  */
 
-package com.juyan.shortlink.project.dto.req;
+package com.juyan.shortlink.project.dto.biz;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 /**
- * 短链接修改请求对象
+ * 短链接统计实体
  */
 @Data
-public class ShortLinkUpdateReqDTO {
-
-    /**
-     * 原始链接
-     */
-    private String originUrl;
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ShortLinkStatsRecordDTO {
 
     /**
      * 完整短链接
      */
     private String fullShortUrl;
 
+    /**
+     * 访问用户IP
+     */
+    private String remoteAddr;
 
     /**
-     * 原始分组标识
+     * 操作系统
      */
-    private String originGid;
+    private String os;
 
     /**
-     * 分组标识
+     * 浏览器
      */
-    private String gid;
+    private String browser;
 
     /**
-     * 有效期类型 0：永久有效 1：自定义
+     * 操作设备
      */
-    private Integer validDateType;
+    private String device;
 
     /**
-     * 有效期
+     * 网络
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date validDate;
+    private String network;
 
     /**
-     * 描述
+     * UV
      */
-    private String describe;
+    private String uv;
 
+    /**
+     * UV访问标识
+     */
+    private Boolean uvFirstFlag;
+
+    /**
+     * UIP访问标识
+     */
+    private Boolean uipFirstFlag;
+
+//    /**
+//     * 消息队列唯一标识
+//     */
+//    private String keys;
+//
+//    /**
+//     * 当前时间
+//     */
+//    private Date currentDate;
 }
