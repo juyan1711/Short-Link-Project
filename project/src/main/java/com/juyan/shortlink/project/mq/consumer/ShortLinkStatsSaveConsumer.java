@@ -62,11 +62,12 @@ public class ShortLinkStatsSaveConsumer implements StreamListener<String, MapRec
         RecordId id = message.getId();
         //判断当前消息是否消费过
         if(!messageQueueIdempotentHandler.isMessageBeingConsumed(id.toString())){
-            //消息被消费过但是消费没有完成（消费过程中宕机或者中断）
+            //消息被消费过并且消费完成，那么直接结束，不做处理
             if(messageQueueIdempotentHandler.isAccomplish(id.toString())){
                 return;
             }
-            throw new ServiceException("消息未完成流程，需要消息队列重试")
+            //消息被消费过但是消费没有完成（消费过程中宕机或者中断）
+            throw new ServiceException("消息未完成流程，需要消息队列重试");
         }
        try {
            Map<String, String> producerMap = message.getValue();
@@ -78,6 +79,7 @@ public class ShortLinkStatsSaveConsumer implements StreamListener<String, MapRec
            }
            stringRedisTemplate.opsForStream().delete(Objects.requireNonNull(stream), id.getValue());
        }catch (Throwable ex){
+           // 某某某情况宕机了，没有及时删除key
            messageQueueIdempotentHandler.delMessageProcessed(id.toString());
            log.error("记录短链接监控消费异常：",ex);
        }
