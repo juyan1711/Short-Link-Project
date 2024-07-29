@@ -34,6 +34,7 @@ import com.juyan.shortlink.project.dto.req.ShortLinkPageReqDTO;
 import com.juyan.shortlink.project.dto.req.ShortLinkUpdateReqDTO;
 import com.juyan.shortlink.project.dto.resp.*;
 import com.juyan.shortlink.project.mq.producer.DelayShortLinkStatsProducer;
+import com.juyan.shortlink.project.mq.producer.ShortLinkStatsSaveProducer;
 import com.juyan.shortlink.project.service.LinkStatsTodayService;
 import com.juyan.shortlink.project.service.ShortLinkService;
 import com.juyan.shortlink.project.toolkit.HashUtil;
@@ -136,9 +137,9 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     private final LinkStatsTodayService linkStatsTodayService;
 
     /**
-     * 延迟队列处理监控数据
+     * Redis消息队列处理监控数据
      */
-    private final DelayShortLinkStatsProducer delayShortLinkStatsProducer;
+    private final ShortLinkStatsSaveProducer shortLinkStatsSaveProducer;
 
     /**
      * 链接跳转白名单
@@ -564,137 +565,11 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
 
     @Override
     public void shortLinkStats(String fullShortUrl, String gid,  ShortLinkStatsRecordDTO statsRecord){
-        fullShortUrl = Optional.ofNullable(fullShortUrl).orElse(statsRecord.getFullShortUrl());
-        RReadWriteLock readWriteLock = redissonClient.getReadWriteLock(String.format(RedisKeyConstant.LOCK_GID_UPDATE_KEY, fullShortUrl));
-        RLock rLock = readWriteLock.readLock();
-        if(!rLock.tryLock()){//获取读锁失败，说明此时有用户进行修改短链接
-            //那么就把统计任务扔到延时队列中进行处理
-            delayShortLinkStatsProducer.send(statsRecord);
-            return;
-        }
-
-
-        try{
-            if(StrUtil.isBlank(gid)){
-                LambdaQueryWrapper<ShortLinkGotoDO> queryWrapper = Wrappers.lambdaQuery(ShortLinkGotoDO.class)
-                        .eq(ShortLinkGotoDO::getFullShortUrl, fullShortUrl);
-                ShortLinkGotoDO shortLinkGotoDO = shortLinkGotoMapper.selectOne(queryWrapper);
-                gid = shortLinkGotoDO.getGid();
-            }
-            int hour = DateUtil.hour(new Date(),true);
-            Week week = DateUtil.dayOfWeekEnum(new Date());
-            int weekValue = week.getIso8601Value();
-            LinkAccessStatsDO linkAccessStatsDO = LinkAccessStatsDO.builder()
-                    .pv(1)
-                    .uv(statsRecord.getUvFirstFlag()?1:0)
-                    .uip(statsRecord.getUipFirstFlag()?1:0)
-                    .hour(hour)
-                    .weekday(weekValue)
-                    .fullShortUrl(fullShortUrl)
-                    .gid(gid)
-                    .date(new Date())
-                    .build();
-            linkAccessStatsMapper.shortLinkStats(linkAccessStatsDO);
-
-            //统计地区访问监控
-            Map<String,Object> localeParamMap = new HashMap<>();
-            localeParamMap.put("key",statsLocaleAmapKey);
-            localeParamMap.put("ip",statsRecord.getRemoteAddr());
-            String localeResult = HttpUtil.get(ShortLinkConstant.AMAP_REMOTE_URL, localeParamMap);
-            JSONObject localeResultObj = JSON.parseObject(localeResult);
-            String infoCode = localeResultObj.getString("infocode");
-            LinkLocaleStatsDO linkLocaleStatsDO;
-            String actualProvince = "未知";
-            String actualCity = "未知";
-            if(StrUtil.isNotBlank(infoCode)&&StrUtil.equals(infoCode,"10000")) {
-                String province = localeResultObj.getString("province");
-                boolean unknownFlag = StrUtil.equals(province, "[]");
-                linkLocaleStatsDO = LinkLocaleStatsDO.builder()
-                        .fullShortUrl(fullShortUrl)
-                        .gid(gid)
-                        .date(new Date())
-                        .country("中国")
-                        .province(actualProvince = unknownFlag ? actualProvince : province)
-                        .city(actualCity = unknownFlag ? actualCity : localeResultObj.getString("city"))
-                        .adcode(unknownFlag ? "未知" : localeResultObj.getString("adcode"))
-                        .cnt(1)
-                        .build();
-                linkLocaleStatsMapper.shortLinkLocaleState(linkLocaleStatsDO);
-            }
-
-                //统计操作系统访问监控
-                LinkOsStatsDO linkOsStatsDO = LinkOsStatsDO.builder()
-                        .fullShortUrl(fullShortUrl)
-                        .gid(gid)
-                        .os(statsRecord.getOs())
-                        .date(new Date())
-                        .cnt(1)
-                        .build();
-                linkOsStatsMapper.shortLinkOsState(linkOsStatsDO);
-
-                //统计浏览器访问监控
-                LinkBrowserStatsDO linkBrowserStatsDO = LinkBrowserStatsDO.builder()
-                        .fullShortUrl(fullShortUrl)
-                        .gid(gid)
-                        .browser(statsRecord.getBrowser())
-                        .date(new Date())
-                        .cnt(1)
-                        .build();
-                linkBrowserStatsMapper.shortLinkBrowserState(linkBrowserStatsDO);
-
-                //统计设备访问
-                LinkDeviceStatsDO linkDeviceStatsDO = LinkDeviceStatsDO.builder()
-                        .fullShortUrl(fullShortUrl)
-                        .gid(gid)
-                        .date(new Date())
-                        .device(statsRecord.getDevice())
-                        .cnt(1)
-                        .build();
-                linkDeviceStatsMapper.shortLinkDeviceState(linkDeviceStatsDO);
-
-                //统计网络访问
-                LinkNetworkStatsDO linkNetworkStatsDO = LinkNetworkStatsDO.builder()
-                        .fullShortUrl(fullShortUrl)
-                        .gid(gid)
-                        .date(new Date())
-                        .network(statsRecord.getNetwork())
-                        .cnt(1)
-                        .build();
-                linkNetworkStatsMapper.shortLinkNetworkState(linkNetworkStatsDO);
-
-                //统计短链接高频ip访问
-                LinkAccessLogsDO linkAccessLogsDO = LinkAccessLogsDO.builder()
-                        .fullShortUrl(fullShortUrl)
-                        .gid(gid)
-                        .user(statsRecord.getUv())
-                        .browser(statsRecord.getBrowser())
-                        .ip(statsRecord.getRemoteAddr())
-                        .os(statsRecord.getOs())
-                        .network(statsRecord.getNetwork())
-                        .device(statsRecord.getDevice())
-                        .locale(StrUtil.join("-","中国",actualProvince,actualCity))
-                        .build();
-                linkAccessLogsMapper.insert(linkAccessLogsDO);
-
-                //短链接访问统计自增
-                baseMapper.incrementStats(gid,fullShortUrl,1,statsRecord.getUvFirstFlag()?1:0,statsRecord.getUipFirstFlag()?1:0);
-
-                //今日访问统计
-                LinkStatsTodayDO linkStatsTodayDO = LinkStatsTodayDO.builder()
-                        .todayPv(1)
-                        .todayUv(statsRecord.getUvFirstFlag() ? 1 : 0)
-                        .todayUip(statsRecord.getUipFirstFlag() ? 1 : 0)
-                        .gid(gid)
-                        .fullShortUrl(fullShortUrl)
-                        .date(new Date())
-                        .build();
-                linkStatsTodayMapper.shortLinkTodayState(linkStatsTodayDO);
-
-        }catch (Throwable ex){
-            log.error("短链接访问量统计异常",ex);
-        }finally {
-            rLock.unlock();
-        }
+        Map<String, String> producerMap = new HashMap<>();
+        producerMap.put("fullShortUrl", fullShortUrl);
+        producerMap.put("gid", gid);
+        producerMap.put("statsRecord", JSON.toJSONString(statsRecord));
+        shortLinkStatsSaveProducer.send(producerMap);
 
 
     }
