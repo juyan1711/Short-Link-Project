@@ -716,7 +716,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             //拼接UUID保证后面每次通过hash算法生成的shortUrl是不同的
             originUrl += UUID.randomUUID().toString();
             shortLinkSuffix = HashUtil.hashToBase62(originUrl);
-            if(!shortUriCreateCachePenetrationBloomFilter.contains(requestParam.getDomain()+"/"+shortLinkSuffix)){
+            if(!shortUriCreateCachePenetrationBloomFilter.contains(createShortLinkDefaultDomain+"/"+shortLinkSuffix)){
                 break;
             }
             customGenerateCount++;

@@ -17,6 +17,7 @@
 
 package com.juyan.shortlink.admin.config;
 
+import com.juyan.shortlink.admin.common.biz.user.UserFlowRiskControlFilter;
 import com.juyan.shortlink.admin.common.biz.user.UserTransmitFilter;
 import com.juyan.shortlink.admin.common.biz.user.UserTransmitFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -43,18 +44,18 @@ public class UserConfiguration {
         return registration;
     }
 
-//    /**
-//     * 用户操作流量风控过滤器
-//     */
-//    @Bean
-//    @ConditionalOnProperty(name = "short-link.flow-limit.enable", havingValue = "true")
-//    public FilterRegistrationBean<UserFlowRiskControlFilter> globalUserFlowRiskControlFilter(
-//            StringRedisTemplate stringRedisTemplate,
-//            UserFlowRiskControlConfiguration userFlowRiskControlConfiguration) {
-//        FilterRegistrationBean<UserFlowRiskControlFilter> registration = new FilterRegistrationBean<>();
-//        registration.setFilter(new UserFlowRiskControlFilter(stringRedisTemplate, userFlowRiskControlConfiguration));
-//        registration.addUrlPatterns("/*");
-//        registration.setOrder(10);
-//        return registration;
-//    }
+    /**
+     * 用户操作流量风控过滤器
+     */
+    @Bean
+    @ConditionalOnProperty(name = "short-link.flow-limit.enable", havingValue = "true")
+    public FilterRegistrationBean<UserFlowRiskControlFilter> globalUserFlowRiskControlFilter(
+            StringRedisTemplate stringRedisTemplate,
+            UserFlowRiskControlConfiguration userFlowRiskControlConfiguration) {
+        FilterRegistrationBean<UserFlowRiskControlFilter> registration = new FilterRegistrationBean<>();
+        registration.setFilter(new UserFlowRiskControlFilter(stringRedisTemplate, userFlowRiskControlConfiguration));
+        registration.addUrlPatterns("/*");
+        registration.setOrder(10);
+        return registration;
+    }
 }
