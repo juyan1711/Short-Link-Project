@@ -45,8 +45,8 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
 
     @Value("${short-link.group.max-num}")
     private Integer groupMaxNum;
-    ShortLinkActualRemoteService shortLinkActualRemoteService = new ShortLinkActualRemoteService() {
-    };
+
+    private final ShortLinkActualRemoteService shortLinkActualRemoteService;
 
     /**
      * save方法的重载

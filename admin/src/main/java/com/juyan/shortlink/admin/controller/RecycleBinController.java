@@ -18,7 +18,7 @@
 package com.juyan.shortlink.admin.controller;
 
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.juyan.shortlink.admin.common.convention.result.Result;
 import com.juyan.shortlink.admin.common.convention.result.Results;
 import com.juyan.shortlink.admin.remote.ShortLinkActualRemoteService;
@@ -38,8 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class RecycleBinController {
     private final RecycleBinService recycleBinService;
-    ShortLinkActualRemoteService shortLinkActualRemoteService = new ShortLinkActualRemoteService() {
-    };
+    private final ShortLinkActualRemoteService shortLinkActualRemoteService;
 
 
     /**
@@ -56,7 +55,7 @@ public class RecycleBinController {
      */
 
     @GetMapping("/api/short-link/admin/v1/recycle-bin/page")
-    public Result<IPage<ShortLinkPageRespDTO>> pageShortLink(ShortLinkRecycleBinPageReqDTO requestParam) {
+    public Result<Page<ShortLinkPageRespDTO>> pageShortLink(ShortLinkRecycleBinPageReqDTO requestParam) {
         return recycleBinService.pageRecycleBinShortLink(requestParam);
     }
 

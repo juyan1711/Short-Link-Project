@@ -19,7 +19,6 @@ package com.juyan.shortlink.admin.controller;
 
 
 import com.juyan.shortlink.admin.common.convention.result.Result;
-import com.juyan.shortlink.admin.common.convention.result.Results;
 import com.juyan.shortlink.admin.remote.ShortLinkActualRemoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,9 +32,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController(value = "urlTitleControllerByAdmin")
 @RequiredArgsConstructor
 public class UrlTitleController {
+    private final ShortLinkActualRemoteService shortLinkActualRemoteService;
 
-    ShortLinkActualRemoteService shortLinkActualRemoteService = new ShortLinkActualRemoteService() {
-    };
 
     /**
      * 根据URL获取对应网站的标题

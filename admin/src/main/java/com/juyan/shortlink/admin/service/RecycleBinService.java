@@ -37,7 +37,7 @@ public interface RecycleBinService {
      * @param requestParam 请求参数
      * @return 返回参数包装
      */
-    Result<IPage<ShortLinkPageRespDTO>> pageRecycleBinShortLink(ShortLinkRecycleBinPageReqDTO requestParam);
+    Result<Page<ShortLinkPageRespDTO>> pageRecycleBinShortLink(ShortLinkRecycleBinPageReqDTO requestParam);
 
 
 }

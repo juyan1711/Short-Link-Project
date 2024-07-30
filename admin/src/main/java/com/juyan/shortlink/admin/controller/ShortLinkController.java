@@ -1,16 +1,17 @@
 package com.juyan.shortlink.admin.controller;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.juyan.shortlink.admin.common.convention.result.Result;
 import com.juyan.shortlink.admin.common.convention.result.Results;
+import com.juyan.shortlink.admin.remote.ShortLinkActualRemoteService;
 import com.juyan.shortlink.admin.remote.dto.req.ShortLinkBatchCreateReqDTO;
 import com.juyan.shortlink.admin.remote.dto.req.ShortLinkUpdateReqDTO;
 import com.juyan.shortlink.admin.remote.dto.resp.*;
-import com.juyan.shortlink.admin.remote.ShortLinkActualRemoteService;
 import com.juyan.shortlink.admin.remote.dto.req.ShortLinkCreateReqDTO;
 import com.juyan.shortlink.admin.remote.dto.req.ShortLinkPageReqDTO;
 import com.juyan.shortlink.admin.toolkit.EasyExcelWebUtil;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,10 +21,11 @@ import java.util.List;
  * 短链接后管控制层
  */
 @RestController
+@RequiredArgsConstructor
 public class ShortLinkController {
-    //TODO:后续重构为SpringCloud调用
-    ShortLinkActualRemoteService shortLinkActualRemoteService = new ShortLinkActualRemoteService() {
-    };
+
+    private final ShortLinkActualRemoteService shortLinkActualRemoteService;
+
 
     /**
      * 新增短链接
@@ -62,8 +64,8 @@ public class ShortLinkController {
      * 分页查询短链接
      */
     @GetMapping("/api/short-link/admin/v1/page")
-    public Result<IPage<ShortLinkPageRespDTO>> pageShortLink(ShortLinkPageReqDTO requestParam){
-        return shortLinkActualRemoteService.pageShortLink(requestParam);
+    public Result<Page<ShortLinkPageRespDTO>> pageShortLink(ShortLinkPageReqDTO requestParam) {
+        return shortLinkActualRemoteService.pageShortLink(requestParam.getGid(), requestParam.getOrderTag(), requestParam.getCurrent(), requestParam.getSize());
     }
 
     /**
