@@ -40,7 +40,7 @@ public class UserConfiguration {
         FilterRegistrationBean<UserTransmitFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(new UserTransmitFilter());
         registration.addUrlPatterns("/*");
-        registration.setOrder(0);
+        registration.setOrder(0);//优先级，数值越小优先级越高
         return registration;
     }
 
