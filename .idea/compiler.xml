@@ -9,6 +9,7 @@
         <module name="shortlink-admin" />
         <module name="shortlink-gateway" />
         <module name="shortlink-project" />
+        <module name="shortlink-aggregation" />
       </profile>
     </annotationProcessing>
   </component>
