@@ -15,7 +15,6 @@ import com.juyan.shortlink.project.dao.entity.*;
 import com.juyan.shortlink.project.dao.mapper.*;
 import com.juyan.shortlink.project.dto.biz.ShortLinkStatsRecordDTO;
 import com.juyan.shortlink.project.mq.idempotent.MessageQueueIdempotentHandler;
-import com.juyan.shortlink.project.mq.producer.DelayShortLinkStatsProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
@@ -49,7 +48,6 @@ public class ShortLinkStatsSaveConsumer implements StreamListener<String, MapRec
     private final LinkDeviceStatsMapper linkDeviceStatsMapper;
     private final LinkNetworkStatsMapper linkNetworkStatsMapper;
     private final LinkStatsTodayMapper linkStatsTodayMapper;
-    private final DelayShortLinkStatsProducer delayShortLinkStatsProducer;
     private final StringRedisTemplate stringRedisTemplate;
     private final MessageQueueIdempotentHandler messageQueueIdempotentHandler;
 
@@ -91,11 +89,7 @@ public class ShortLinkStatsSaveConsumer implements StreamListener<String, MapRec
         fullShortUrl = Optional.ofNullable(fullShortUrl).orElse(statsRecord.getFullShortUrl());
         RReadWriteLock readWriteLock = redissonClient.getReadWriteLock(String.format(RedisKeyConstant.LOCK_GID_UPDATE_KEY, fullShortUrl));
         RLock rLock = readWriteLock.readLock();
-        if(!rLock.tryLock()){//获取读锁失败，说明此时有用户进行修改短链接
-            //那么就把统计任务扔到延时队列中进行处理
-            delayShortLinkStatsProducer.send(statsRecord);
-            return;
-        }
+        rLock.lock();//阻塞获取读锁
 
 
         try{

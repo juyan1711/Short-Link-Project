@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.locks.LockSupport;
 
 @Component
+@Deprecated
 @RequiredArgsConstructor
 public class DelayShortLinkStatsConsumer implements InitializingBean {
     private final RedissonClient redissonClient;

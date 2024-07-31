@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import static com.juyan.shortlink.project.common.constant.RedisKeyConstant.DELAY_QUEUE_STATS_KEY;
 
 @Component
+@Deprecated
 @RequiredArgsConstructor
 public class DelayShortLinkStatsProducer {
     private final RedissonClient redissonClient;
